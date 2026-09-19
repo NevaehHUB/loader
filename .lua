@@ -5,13 +5,13 @@ local CoreGui = game:GetService("CoreGui")
 local Junkie = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
 Junkie.service = "Nevaeh premium"
 Junkie.identifier = "1202510"
-Junkie.provider = "Eclipse"
+Junkie.provider = "Eclipse" -- Strictly enforces the Eclipse provider
 
--- Your Custom Key Link
-local KEY_LINK = "https://jnkie.com/flow/42e9c838-3191-42ba-8a85-08889b1adcdd"
+-- Dynamically generate the correct key link for the user
+local KEY_LINK = Junkie.get_key_link()
 
 -- Initial Clipboard Copy
-if setclipboard then
+if KEY_LINK and setclipboard then
     setclipboard(KEY_LINK)
 end
 
@@ -63,8 +63,14 @@ local StatusText = Instance.new("TextLabel")
 StatusText.Size = UDim2.new(1, 0, 0, 20)
 StatusText.Position = UDim2.new(0, 0, 0.25, 0)
 StatusText.BackgroundTransparency = 1
-StatusText.Text = "Link copied to clipboard. Awaiting Key..."
-StatusText.TextColor3 = Color3.fromRGB(180, 180, 180)
+-- Check if we successfully got a link on startup
+if KEY_LINK then
+    StatusText.Text = "Link copied to clipboard. Awaiting Key..."
+    StatusText.TextColor3 = Color3.fromRGB(180, 180, 180)
+else
+    StatusText.Text = "Please wait 5 minutes to generate a new link."
+    StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+end
 StatusText.Font = Enum.Font.GothamMedium
 StatusText.TextSize = 13
 StatusText.Parent = MainFrame
@@ -143,10 +149,18 @@ end)
 
 -- Button Functionality
 GetKeyBtn.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard(KEY_LINK)
+    -- Always try to grab a fresh link in case they hit the rate limit earlier
+    local freshLink = Junkie.get_key_link()
+    
+    if freshLink then
+        if setclipboard then
+            setclipboard(freshLink)
+        end
         StatusText.Text = "Link copied to clipboard!"
         StatusText.TextColor3 = Color3.fromRGB(120, 255, 120)
+    else
+        StatusText.Text = "Rate limited. Please wait 5 minutes."
+        StatusText.TextColor3 = Color3.fromRGB(255, 80, 80)
     end
 end)
 
@@ -160,7 +174,7 @@ VerifyBtn.MouseButton1Click:Connect(function()
         StatusText.Text = "Authenticating..."
         StatusText.TextColor3 = Color3.fromRGB(255, 200, 100)
         
-        -- Use Junkie API to validate the cleaned key
+        -- Use Junkie API to validate the cleaned key dynamically
         local validation = Junkie.check_key(userKey)
         
         if validation.valid then

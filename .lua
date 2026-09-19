@@ -1,15 +1,45 @@
-local config = {
+-- Load library
+local Junkie = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
+Junkie.service = "Nevaeh Free"
+Junkie.identifier = "12345" 
+Junkie.provider = "Eclipse"
+
+-- UI Implementation
+local validatedKey = nil
+
+-- Show custom UI 
+local function showUI()
+    local link = Junkie.get_key_link()
+    if link then
+        setclipboard(link)  -- Copy to clipboard
+        print("Link copied to clipboard!")
+    else
+        warn("Wait 5 minutes")
+        return nil
+    end
     
-    [107778070777162] = "https://api.jnkie.com/api/v1/luascripts/public/ad1854a7dd4b1db76a97ef722c59b35b35aa90eed1780d9fba4aef65c8c6b2e2/download",
-
-}
-
-repeat task.wait() until game:IsLoaded()
-
-local scriptUrl = config[game.PlaceId]
-
-if scriptUrl then
-    pcall(function()
-        loadstring(game:HttpGet(scriptUrl))()
-    end)
+    -- Wait for user to input key (your UI logic here)
+    local userKey = promptUserForKey()  -- Replace with your UI input
+    
+    if userKey then
+        local validation = Junkie.check_key(userKey)
+        if validation.valid then
+            return userKey
+        else
+            warn("Error: " .. (validation.error or "Invalid key"))
+            return nil
+        end
+    end
 end
+
+validatedKey = showUI()
+
+if not validatedKey then
+    warn("No valid key provided")
+    return
+end
+
+-- Store key globally for Junkie script to use
+getgenv().SCRIPT_KEY = validatedKey
+
+-- Now load the actual Junkie script

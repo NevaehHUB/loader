@@ -1,141 +1,225 @@
--- Load library
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+-- Load Junkie SDK
 local Junkie = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
 Junkie.service = "Nevaeh premium"
 Junkie.identifier = "1202510"
 Junkie.provider = "Eclipse"
 
--- Get and copy the link first
-local link = Junkie.get_key_link()
-if link then
-    if setclipboard then
-        setclipboard(link)
-    end
-    print("Link copied to clipboard!")
-else
-    warn("Please wait 5 minutes before generating a new link")
+-- Your Custom Key Link
+local KEY_LINK = "https://jnkie.com/flow/42e9c838-3191-42ba-8a85-08889b1adcdd"
+
+-- Initial Clipboard Copy
+if setclipboard then
+    setclipboard(KEY_LINK)
 end
 
--- Create the GUI
-local CoreGui = game:GetService("CoreGui")
+-- ==========================================
+-- UI CONSTRUCTION (MODERN REVAMP)
+-- ==========================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "JunkieKeySystem"
+ScreenGui.Name = "NevaehPremiumUI"
 ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 350, 0, 160)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -80)
-MainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+MainFrame.Size = UDim2.new(0, 400, 0, 240)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -120)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = true
 MainFrame.Parent = ScreenGui
 
+-- Neon Glow Border
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(120, 80, 255) -- Sleek Purple
+UIStroke.Thickness = 2
+UIStroke.Parent = MainFrame
+
 local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = MainFrame
 
+-- Top Accent Line
+local AccentLine = Instance.new("Frame")
+AccentLine.Size = UDim2.new(1, 0, 0, 4)
+AccentLine.Position = UDim2.new(0, 0, 0, 0)
+AccentLine.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+AccentLine.BorderSizePixel = 0
+AccentLine.Parent = MainFrame
+
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Position = UDim2.new(0, 0, 0, 10)
 Title.BackgroundTransparency = 1
-Title.Text = "Nevaeh Premium - Key System"
+Title.Text = "NEVAEH PREMIUM"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 16
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 22
 Title.Parent = MainFrame
 
 local StatusText = Instance.new("TextLabel")
 StatusText.Size = UDim2.new(1, 0, 0, 20)
 StatusText.Position = UDim2.new(0, 0, 0.25, 0)
 StatusText.BackgroundTransparency = 1
-StatusText.Text = link and "Key link copied to clipboard!" or "Please wait 5 minutes"
-StatusText.TextColor3 = Color3.fromRGB(150, 255, 150)
-StatusText.Font = Enum.Font.Gotham
+StatusText.Text = "Link copied to clipboard. Awaiting Key..."
+StatusText.TextColor3 = Color3.fromRGB(180, 180, 180)
+StatusText.Font = Enum.Font.GothamMedium
 StatusText.TextSize = 13
 StatusText.Parent = MainFrame
 
-local KeyInput = Instance.new("TextBox")
-KeyInput.Size = UDim2.new(0.9, 0, 0, 35)
-KeyInput.Position = UDim2.new(0.05, 0, 0.45, 0)
-KeyInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-KeyInput.PlaceholderText = "Paste your key here..."
-KeyInput.Font = Enum.Font.Gotham
-KeyInput.TextSize = 14
-KeyInput.Text = ""
-KeyInput.Parent = MainFrame
-Instance.new("UICorner", KeyInput).CornerRadius = UDim.new(0, 5)
+local KeyInputBox = Instance.new("TextBox")
+KeyInputBox.Size = UDim2.new(0.85, 0, 0, 45)
+KeyInputBox.Position = UDim2.new(0.075, 0, 0.42, 0)
+KeyInputBox.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+KeyInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyInputBox.PlaceholderText = "Paste your authentication key here..."
+KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+KeyInputBox.Font = Enum.Font.Gotham
+KeyInputBox.TextSize = 14
+KeyInputBox.Text = ""
+KeyInputBox.ClearTextOnFocus = false
+KeyInputBox.Parent = MainFrame
 
-local SubmitBtn = Instance.new("TextButton")
-SubmitBtn.Size = UDim2.new(0.9, 0, 0, 35)
-SubmitBtn.Position = UDim2.new(0.05, 0, 0.72, 0)
-SubmitBtn.BackgroundColor3 = Color3.fromRGB(80, 160, 80)
-SubmitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SubmitBtn.Text = "Verify Key"
-SubmitBtn.Font = Enum.Font.GothamBold
-SubmitBtn.TextSize = 14
-SubmitBtn.Parent = MainFrame
-Instance.new("UICorner", SubmitBtn).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", KeyInputBox).CornerRadius = UDim.new(0, 8)
+local InputStroke = Instance.new("UIStroke")
+InputStroke.Color = Color3.fromRGB(60, 60, 70)
+InputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+InputStroke.Parent = KeyInputBox
 
--- System Variables
+-- Buttons Container
+local GetKeyBtn = Instance.new("TextButton")
+GetKeyBtn.Size = UDim2.new(0.4, 0, 0, 40)
+GetKeyBtn.Position = UDim2.new(0.075, 0, 0.72, 0)
+GetKeyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+GetKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+GetKeyBtn.Text = "Get Key"
+GetKeyBtn.Font = Enum.Font.GothamBold
+GetKeyBtn.TextSize = 14
+GetKeyBtn.AutoButtonColor = false
+GetKeyBtn.Parent = MainFrame
+Instance.new("UICorner", GetKeyBtn).CornerRadius = UDim.new(0, 8)
+
+local VerifyBtn = Instance.new("TextButton")
+VerifyBtn.Size = UDim2.new(0.4, 0, 0, 40)
+VerifyBtn.Position = UDim2.new(0.525, 0, 0.72, 0)
+VerifyBtn.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+VerifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+VerifyBtn.Text = "Verify"
+VerifyBtn.Font = Enum.Font.GothamBold
+VerifyBtn.TextSize = 14
+VerifyBtn.AutoButtonColor = false
+VerifyBtn.Parent = MainFrame
+Instance.new("UICorner", VerifyBtn).CornerRadius = UDim.new(0, 8)
+
+-- ==========================================
+-- ANIMATIONS & LOGIC
+-- ==========================================
 local completionEvent = Instance.new("BindableEvent")
 local attempts = 0
 local maxAttempts = 5
 
--- Button Logic
-SubmitBtn.MouseButton1Click:Connect(function()
-    local userKey = KeyInput.Text
+-- Hover Animations
+local function createHoverEffect(button, defaultColor, hoverColor)
+    button.MouseEnter:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
+    end)
+    button.MouseLeave:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = defaultColor}):Play()
+    end)
+end
+
+createHoverEffect(GetKeyBtn, Color3.fromRGB(40, 40, 45), Color3.fromRGB(60, 60, 65))
+createHoverEffect(VerifyBtn, Color3.fromRGB(120, 80, 255), Color3.fromRGB(140, 100, 255))
+
+-- Input Focus Animation
+KeyInputBox.Focused:Connect(function()
+    TweenService:Create(InputStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(120, 80, 255)}):Play()
+end)
+KeyInputBox.FocusLost:Connect(function()
+    TweenService:Create(InputStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(60, 60, 70)}):Play()
+end)
+
+-- Button Functionality
+GetKeyBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(KEY_LINK)
+        StatusText.Text = "Link copied to clipboard!"
+        StatusText.TextColor3 = Color3.fromRGB(120, 255, 120)
+    end
+end)
+
+VerifyBtn.MouseButton1Click:Connect(function()
+    local rawInput = KeyInputBox.Text
+    -- Fix the bug where players paste spaces at the beginning or end of the key
+    local userKey = rawInput:match("^%s*(.-)%s*$")
     
     if userKey and #userKey > 0 then
         attempts = attempts + 1
-        StatusText.Text = "Checking key..."
-        StatusText.TextColor3 = Color3.fromRGB(255, 255, 150)
+        StatusText.Text = "Authenticating..."
+        StatusText.TextColor3 = Color3.fromRGB(255, 200, 100)
         
-        -- Use official Junkie logic to check key
+        -- Use Junkie API to validate the cleaned key
         local validation = Junkie.check_key(userKey)
         
         if validation.valid then
-            StatusText.Text = "Key validated successfully!"
-            StatusText.TextColor3 = Color3.fromRGB(150, 255, 150)
+            StatusText.Text = "Access Granted! Loading..."
+            StatusText.TextColor3 = Color3.fromRGB(120, 255, 120)
             
             -- Store key globally for external loader
             getgenv().SCRIPT_KEY = userKey
             
-            task.wait(1)
+            -- Smooth fade out
+            local fadeOut = TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0,0,0,0), BackgroundTransparency = 1})
+            fadeOut:Play()
+            fadeOut.Completed:Wait()
+            
             ScreenGui:Destroy()
             completionEvent:Fire(true) -- Success
         else
-            local errorMsg = validation.message or "Unknown error"
-            StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+            local errorMsg = validation.message or "Invalid Key"
+            StatusText.TextColor3 = Color3.fromRGB(255, 80, 80)
             
-            -- Handle specific backend error messages from your code
             if errorMsg == "KEY_EXPIRED" then
-                StatusText.Text = "Key expired - get a new one"
+                StatusText.Text = "Key expired. Please get a new one."
             elseif errorMsg == "HWID_BANNED" then
-                game.Players.LocalPlayer:Kick("Hardware banned")
+                game.Players.LocalPlayer:Kick("You are hardware banned from Nevaeh Premium.")
             elseif errorMsg == "SERVICE_MISMATCH" then
-                StatusText.Text = "Key is for a different service"
+                StatusText.Text = "Invalid key for Nevaeh Premium."
             elseif errorMsg == "HWID_MISMATCH" then
-                StatusText.Text = "HWID limit reached"
+                StatusText.Text = "HWID limit reached."
             else
                 StatusText.Text = "Error: " .. errorMsg
             end
+            
+            -- Shake animation for incorrect key
+            local originalPos = MainFrame.Position
+            for i = 1, 4 do
+                MainFrame.Position = originalPos + UDim2.new(0, (i%2==0 and 10 or -10), 0, 0)
+                task.wait(0.05)
+            end
+            MainFrame.Position = originalPos
             
             if attempts >= maxAttempts then
                 StatusText.Text = "Too many failed attempts!"
                 task.wait(2)
                 ScreenGui:Destroy()
-                completionEvent:Fire(false) -- Failed
+                completionEvent:Fire(false)
             end
         end
     else
-        StatusText.Text = "Error: No key entered"
-        StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+        StatusText.Text = "Please enter a valid key."
+        StatusText.TextColor3 = Color3.fromRGB(255, 80, 80)
     end
 end)
 
--- Wait for the user to complete the GUI interaction
+-- Wait for UI completion
 local isSuccess = completionEvent.Event:Wait()
 
--- Load main script ONLY if validation was successful
+-- Load Main Script if successful
 if isSuccess then
     loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/5ad011b0e9815baf20cb915494d9bbbfa03ccb625fd76538f370491bf2bf118c/download"))()
 else
-    warn("Key validation failed or was cancelled.")
+    warn("Nevaeh Premium: Key validation failed.")
 end

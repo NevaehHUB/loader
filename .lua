@@ -1,6 +1,6 @@
 local config = {
 
-    [142823291] = "",
+    [142823291] = "loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/5ad011b0e9815baf20cb915494d9bbbfa03ccb625fd76538f370491bf2bf118c/download"))()",
 
 }
 

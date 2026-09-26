@@ -12,6 +12,4 @@ if scriptUrl then
     pcall(function()
         loadstring(game:HttpGet(scriptUrl))()
     end)
-else
-    game.Players.LocalPlayer:Kick("Unsupported game daddy")
 end
